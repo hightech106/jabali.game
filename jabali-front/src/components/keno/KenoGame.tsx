@@ -1,17 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useWallet } from "@/context/WalletContext";
 import KenoBoard from "./KenoBoard";
 import BetPanel from "./BetPanel";
 import ResultPanel from "./ResultPanel";
 import { api } from "@/lib/api";
 
 export default function KenoGame() {
+  const { bet, payout, balance } = useWallet();
+
   const [selected, setSelected] = useState<number[]>([]);
   const [drawn, setDrawn] = useState<number[]>([]);
   const [betAmount, setBetAmount] = useState(100);
   const [matches, setMatches] = useState<number | null>(null);
-  const [payout, setPayout] = useState<number | null>(null);
+  const [winAmount, setWinAmount] = useState<number | null>(null);
 
   function toggleNumber(n: number) {
     setSelected(prev =>
@@ -24,6 +27,10 @@ export default function KenoGame() {
   }
 
   async function play() {
+    if (balance < betAmount) return;
+
+    bet(betAmount);
+
     const res = await api.post("/keno/bet", {
       betAmount,
       pickedNumbers: selected,
@@ -33,7 +40,11 @@ export default function KenoGame() {
 
     setDrawn(res.data.drawnNumbers);
     setMatches(res.data.matches);
-    setPayout(res.data.payout);
+    setWinAmount(res.data.payout);
+
+    if (res.data.payout > 0) {
+      setTimeout(() => payout(res.data.payout), 500);
+    }
   }
 
   return (
@@ -51,11 +62,11 @@ export default function KenoGame() {
           betAmount={betAmount}
           setBetAmount={setBetAmount}
           onPlay={play}
-          disabled={selected.length === 0}
+          disabled={selected.length === 0 || balance < betAmount}
         />
       </div>
 
-      <ResultPanel matches={matches} payout={payout} />
+      <ResultPanel matches={matches} payout={winAmount} />
     </div>
   );
 }
