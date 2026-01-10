@@ -26,3 +26,8 @@ body {
 .border-r { border-right: 1px solid var(--border); }
 
 .text-accent { color: var(--accent); }
+
+.bg-card {
+  background: #11161d;
+}
+

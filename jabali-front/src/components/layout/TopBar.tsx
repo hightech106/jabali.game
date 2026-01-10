@@ -1,11 +1,12 @@
+import Link from "next/link";
 import Balance from "../wallet/Balance";
 
 export default function TopBar() {
   return (
     <header className="h-14 flex items-center justify-between px-6 bg-top border-b">
-      <div className="font-bold text-lg text-accent">
+      <Link href="/" className="font-bold text-lg text-accent hover:opacity-80 transition">
         Jabali
-      </div>
+      </Link>
 
       <div className="flex items-center gap-6">
         <Balance />
