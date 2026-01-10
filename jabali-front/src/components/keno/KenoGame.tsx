@@ -8,7 +8,7 @@ import ResultPanel from "./ResultPanel";
 import { api } from "@/lib/api";
 
 export default function KenoGame() {
-  const { bet, payout, balance } = useWallet();
+  const { bet, payout, balance, addBet } = useWallet();
 
   const [selected, setSelected] = useState<number[]>([]);
   const [drawn, setDrawn] = useState<number[]>([]);
@@ -41,6 +41,15 @@ export default function KenoGame() {
     setDrawn(res.data.drawnNumbers);
     setMatches(res.data.matches);
     setWinAmount(res.data.payout);
+
+    addBet({
+      id: Date.now(),
+      game: "Keno",
+      amount: betAmount,
+      payout: res.data.payout,
+      win: res.data.payout > 0,
+      time: new Date().toLocaleTimeString(),
+    });
 
     if (res.data.payout > 0) {
       setTimeout(() => payout(res.data.payout), 500);

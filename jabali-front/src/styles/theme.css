@@ -31,3 +31,7 @@ body {
   background: #11161d;
 }
 
+.border-l {
+  border-left: 1px solid var(--border);
+}
+
