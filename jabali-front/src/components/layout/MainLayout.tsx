@@ -1,4 +1,4 @@
-import TopBar from "./TopBar";
+import Header from "./Header";
 import Sidebar from "./Sidebar";
 import BetHistory from "@/components/history/BetHistory";
 
@@ -9,7 +9,7 @@ export default function MainLayout({
 }) {
   return (
     <div className="h-screen flex flex-col">
-      <TopBar />
+      <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         <main className="flex-1 overflow-y-auto p-6 bg-main">
