@@ -24,6 +24,10 @@ export class KenoService {
     return drawn;
   }
 
+  getMultiplier(picksCount: number, matches: number): number {
+    return KENO_PAYOUTS[picksCount]?.[matches] ?? 0;
+  }
+
   placeBet(
     betAmount: number,
     picked: number[],
@@ -33,9 +37,7 @@ export class KenoService {
     const drawn = this.drawNumbers(clientSeed, nonce);
     const matches = picked.filter(n => drawn.includes(n)).length;
 
-    const multiplier =
-      KENO_PAYOUTS[picked.length]?.[matches] ?? 0;
-
+    const multiplier = this.getMultiplier(picked.length, matches);
     const payout = betAmount * multiplier;
 
     return {

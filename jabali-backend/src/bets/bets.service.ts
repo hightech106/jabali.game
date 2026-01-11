@@ -62,6 +62,50 @@ export class BetsService {
     });
   }
 
+  async placeKenoBetWithResult(
+    userId: number,
+    amount: number,
+    picks: number[],
+    drawn: number[],
+    hits: number,
+    payout: number
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      const user = await this.usersService.findById(userId);
+
+      if (user.balance < amount) {
+        throw new BadRequestException("Insufficient balance");
+      }
+
+      // Deduct balance
+      user.balance -= amount;
+      await manager.save(user);
+
+      // Credit payout
+      user.balance += payout;
+      await manager.save(user);
+
+      // Store bet
+      const bet = manager.create(Bet, {
+        user,
+        amount,
+        picks,
+        hits,
+        payout,
+      });
+
+      await manager.save(bet);
+
+      return {
+        betId: bet.id,
+        hits,
+        payout,
+        balance: user.balance,
+        drawn,
+      };
+    });
+  }
+
   private drawNumbers(): number[] {
     const numbers = Array.from({ length: 40 }, (_, i) => i + 1);
     return numbers.sort(() => 0.5 - Math.random()).slice(0, 10);
