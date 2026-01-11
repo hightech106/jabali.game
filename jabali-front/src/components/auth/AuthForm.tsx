@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "./AuthContext";
 import AuthInput from "./AuthInput";
+import { useRouter } from "next/navigation";
 
 interface Props {
   type: "login" | "register";
 }
 
 export default function AuthForm({ type }: Props) {
+  const { login } = useAuth();
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,11 +20,21 @@ export default function AuthForm({ type }: Props) {
   const submit = async () => {
     setLoading(true);
 
-    await fetch(`http://localhost:4000/auth/${type}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    const res = await fetch(
+      `http://localhost:4000/auth/${type}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.accessToken) {
+      login(data.accessToken);
+      router.push("/"); // go to main page
+    }
 
     setLoading(false);
   };
