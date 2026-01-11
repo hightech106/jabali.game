@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthContext";
 
 interface WalletContextType {
@@ -17,7 +17,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const refreshBalance = async () => {
+  const refreshBalance = useCallback(async () => {
     if (!token) {
       setBalance(0);
       return;
@@ -42,12 +42,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   // Fetch balance when token changes (login / logout)
   useEffect(() => {
     refreshBalance();
-  }, [token]);
+  }, [refreshBalance]);
 
   return (
     <WalletContext.Provider
