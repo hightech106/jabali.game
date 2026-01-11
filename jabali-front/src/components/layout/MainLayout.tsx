@@ -1,6 +1,6 @@
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import BetHistory from "@/components/history/BetHistory";
+// import BetHistory from "@/components/history/BetHistory";
 
 export default function MainLayout({
   children,
@@ -15,7 +15,7 @@ export default function MainLayout({
         <main className="flex-1 overflow-y-auto p-6 bg-main">
           {children}
         </main>
-        <BetHistory />
+        {/* <BetHistory /> */}
       </div>
     </div>
   );

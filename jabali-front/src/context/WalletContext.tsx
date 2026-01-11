@@ -1,50 +1,61 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "@/components/auth/AuthContext";
 
-export type BetRecord = {
-  id: number;
-  game: string;
-  amount: number;
-  payout: number;
-  win: boolean;
-  time: string;
-};
-
-type WalletContextType = {
+interface WalletContextType {
   balance: number;
-  bets: BetRecord[];
-  deposit: (amount: number) => void;
-  bet: (amount: number) => void;
-  payout: (amount: number) => void;
-  addBet: (bet: BetRecord) => void;
-};
+  loading: boolean;
+  refreshBalance: () => Promise<void>;
+}
 
 const WalletContext = createContext<WalletContextType | null>(null);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const [balance, setBalance] = useState(10000);
-  const [bets, setBets] = useState<BetRecord[]>([]);
+  const { token } = useAuth();
 
-  function deposit(amount: number) {
-    setBalance(b => b + amount);
-  }
+  const [balance, setBalance] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  function bet(amount: number) {
-    setBalance(b => b - amount);
-  }
+  const refreshBalance = async () => {
+    if (!token) {
+      setBalance(0);
+      return;
+    }
 
-  function payout(amount: number) {
-    setBalance(b => b + amount);
-  }
+    setLoading(true);
 
-  function addBet(bet: BetRecord) {
-    setBets(prev => [bet, ...prev].slice(0, 20));
-  }
+    try {
+      const res = await fetch("http://localhost:4000/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch balance");
+
+      const data = await res.json();
+      setBalance(Number(data.balance));
+    } catch (err) {
+      console.error("Wallet error:", err);
+      setBalance(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch balance when token changes (login / logout)
+  useEffect(() => {
+    refreshBalance();
+  }, [token]);
 
   return (
     <WalletContext.Provider
-      value={{ balance, bets, deposit, bet, payout, addBet }}
+      value={{
+        balance,
+        loading,
+        refreshBalance,
+      }}
     >
       {children}
     </WalletContext.Provider>
@@ -53,6 +64,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
 export function useWallet() {
   const ctx = useContext(WalletContext);
-  if (!ctx) throw new Error("WalletProvider missing");
+  if (!ctx) {
+    throw new Error("useWallet must be used inside WalletProvider");
+  }
   return ctx;
 }

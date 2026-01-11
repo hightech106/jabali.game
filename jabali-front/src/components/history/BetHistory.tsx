@@ -1,44 +1,63 @@
-"use client";
+// "use client";
 
-import { useWallet } from "@/context/WalletContext";
-import clsx from "clsx";
+// import { useAuth } from "@/components/auth/AuthContext";
+// import { useEffect, useState } from "react";
 
-export default function BetHistory() {
-  const { bets } = useWallet();
+// interface Bet {
+//   id: number;
+//   amount: number;
+//   createdAt: string;
+// }
 
-  return (
-    <aside className="w-80 bg-sidebar border-l p-4">
-      <h3 className="font-bold mb-3">Bet History</h3>
+// export default function BetHistory() {
+//   const { token } = useAuth();
+//   const [bets, setBets] = useState<Bet[]>([]);
+//   const [loading, setLoading] = useState(false);
 
-      <div className="flex flex-col gap-2 text-sm">
-        {bets.length === 0 && (
-          <div className="text-gray-500">No bets yet</div>
-        )}
+//   useEffect(() => {
+//     if (!token) return;
 
-        {bets.map(bet => (
-          <div
-            key={bet.id}
-            className="flex justify-between bg-card px-3 py-2 rounded"
-          >
-            <div>
-              <div className="font-semibold">{bet.game}</div>
-              <div className="text-xs text-gray-400">
-                {bet.time}
-              </div>
-            </div>
+//     setLoading(true);
 
-            <div
-              className={clsx(
-                "font-bold",
-                bet.win ? "text-green-400" : "text-red-400"
-              )}
-            >
-              {bet.win ? "+" : "-"}
-              {bet.win ? bet.payout : bet.amount}
-            </div>
-          </div>
-        ))}
-      </div>
-    </aside>
-  );
-}
+//     fetch("http://localhost:4000/bets", {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//       .then((res) => res.json())
+//       .then(setBets)
+//       .finally(() => setLoading(false));
+//   }, [token]);
+
+//   if (!token) {
+//     return (
+//       <div className="text-sm text-gray-400">
+//         Sign in to view bet history
+//       </div>
+//     );
+//   }
+
+//   if (loading) {
+//     return <div className="text-sm text-gray-400">Loading bets…</div>;
+//   }
+
+//   return (
+//     <div className="space-y-2">
+//       {bets.length === 0 && (
+//         <div className="text-sm text-gray-400">
+//           No bets yet
+//         </div>
+//       )}
+
+//       {bets.map((bet) => (
+//         <div
+//           key={bet.id}
+//           className="flex justify-between text-sm bg-[#12161c] p-2 rounded-md border border-[#1f2630]"
+//         >
+//           <span>Bet</span>
+//           <span>{bet.amount}</span>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }

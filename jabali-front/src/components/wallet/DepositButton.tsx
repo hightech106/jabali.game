@@ -1,16 +1,27 @@
-"use client";
-
-import { useWallet } from "@/context/WalletContext";
+import { useAuth } from "@/components/auth/AuthContext";
 
 export default function DepositButton() {
-  const { deposit } = useWallet();
+  const { token } = useAuth();
+
+  if (!token) {
+    return (
+      <button
+        disabled
+        className="opacity-50 cursor-not-allowed"
+      >
+        Deposit
+      </button>
+    );
+  }
 
   return (
     <button
-      onClick={() => deposit(1000)}
-      className="px-3 py-1 rounded bg-green-600 text-black text-sm font-bold"
+      onClick={() => {
+        // open deposit modal
+      }}
+      className="bg-[#f5c451] text-black px-4 py-2 rounded-md"
     >
-      + Deposit
+      Deposit
     </button>
   );
 }
